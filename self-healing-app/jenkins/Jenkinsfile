@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         DOCKERHUB = credentials('dockerhub-creds')
-        IMAGE_NAME = "aksh230570/self-healing-app"
+        IMAGE_NAME = "dockerr821/self-healing-app"
+
     }
 
     stages {
