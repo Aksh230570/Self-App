@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🚀 Self-Healing App</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 Welcome to Self-Healing App</h1>
+    <p>This app runs on Kubernetes and heals itself automatically!</p>
+    <button id="check-btn">Check Backend Status</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    document.getElementById("check-btn").addEventListener("click", async () => {
+      try {
+        const res = await fetch(window.location.origin + "/api/status");
+        if (!res.ok) throw new Error("Network response was not ok");
+        const data = await res.json();
+        document.getElementById("result").innerText = data.status;
+      } catch (err) {
+        document.getElementById("result").innerText = "⚠️ Error contacting backend!";
+      }
+    });
+  </script>
+</body>
+</html>
