@@ -17,9 +17,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat """
-                        docker build -t %IMAGE_NAME%:latest .
-                    """
+                    bat 'docker build -t %IMAGE_NAME%:latest self-healing-app/'
                 }
             }
         }
@@ -27,9 +25,7 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    bat """
-                        echo %DOCKERHUB_PSW% | docker login -u %DOCKERHUB_USR% --password-stdin
-                    """
+                    bat 'echo %DOCKERHUB_PSW% | docker login -u %DOCKERHUB_USR% --password-stdin'
                 }
             }
         }
@@ -37,17 +33,15 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    bat """
-                        docker push %IMAGE_NAME%:latest
-                    """
+                    bat 'docker push %IMAGE_NAME%:latest'
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo "To deploy your app, run:"
-                echo "kubectl apply -f k8s/"
+                echo "To deploy manually, run:"
+                echo "kubectl apply -f self-healing-app/k8s/"
             }
         }
     }
