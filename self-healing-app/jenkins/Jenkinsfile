@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        DOCKERHUB = credentials('dockerhub-creds')
         IMAGE_NAME = "aksh230570/self-healing-app"
     }
 
@@ -10,14 +10,16 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/Aksh230570/Self-App.git'
+                git branch: 'main', url: 'https://github.com/Aksh230570/Self-App.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t ${IMAGE_NAME}:latest self-healing-app/'
+                    bat """
+                        docker build -t %IMAGE_NAME%:latest .
+                    """
                 }
             }
         }
@@ -25,7 +27,9 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    sh 'echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin'
+                    bat """
+                        echo %DOCKERHUB_PSW% | docker login -u %DOCKERHUB_USR% --password-stdin
+                    """
                 }
             }
         }
@@ -33,15 +37,17 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh 'docker push ${IMAGE_NAME}:latest'
+                    bat """
+                        docker push %IMAGE_NAME%:latest
+                    """
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo "To deploy, run this on your system:"
-                echo "kubectl apply -f self-healing-app/k8s/"
+                echo "To deploy your app, run:"
+                echo "kubectl apply -f k8s/"
             }
         }
     }
