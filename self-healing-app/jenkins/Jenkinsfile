@@ -14,10 +14,22 @@ pipeline {
             }
         }
 
+        stage('Clean Old Docker Image') {
+            steps {
+                script {
+                    bat """
+                        docker rmi -f %IMAGE_NAME%:latest || echo "No previous image"
+                    """
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    bat 'docker build -t %IMAGE_NAME%:latest self-healing-app/'
+                    bat """
+                        docker build --no-cache -t %IMAGE_NAME%:latest self-healing-app/
+                    """
                 }
             }
         }
@@ -25,7 +37,9 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 script {
-                    bat 'echo %DOCKERHUB_PSW% | docker login -u %DOCKERHUB_USR% --password-stdin'
+                    bat """
+                        echo %DOCKERHUB_PSW% | docker login -u %DOCKERHUB_USR% --password-stdin
+                    """
                 }
             }
         }
@@ -33,7 +47,9 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    bat 'docker push %IMAGE_NAME%:latest'
+                    bat """
+                        docker push %IMAGE_NAME%:latest
+                    """
                 }
             }
         }
